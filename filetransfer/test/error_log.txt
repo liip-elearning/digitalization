@@ -1,0 +1,2 @@
+[16-Aug-2012 16:31:22 UTC] PHP Warning:  fopen(test/copyTestCopy.pdf): failed to open stream: No such file or directory in /nfs/web_tumtest_moodle/www/s/lu26ves/webserver/htdocs/mod/digitalization/!sftp_test/test/sftp.test.php on line 34
+[16-Aug-2012 16:31:22 UTC] PHP Notice:  Undefined variable: fileHandle in /nfs/web_tumtest_moodle/www/s/lu26ves/webserver/htdocs/mod/digitalization/!sftp_test/sftp.php on line 86
