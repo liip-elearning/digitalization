@@ -495,12 +495,7 @@ function digitalization_scale_used($digitalizationid, $scaleid) {
  */
 function digitalization_scale_used_anywhere($scaleid) {
     global $DB;
-
-    if ($scaleid and $DB->record_exists('digitalization', 'grade', -$scaleid)) {
-        return true;
-    } else {
-        return false;
-    }
+    return false;
 }
 
 /**
