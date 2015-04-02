@@ -63,10 +63,10 @@ class restore_digitalization_activity_structure_step extends restore_activity_st
         $newitemid = $DB->insert_record('digitalization', $data);
         // immediately after inserting "activity" record, call this
         $this->apply_activity_instance($newitemid);
-	
-	// If old instance is already delivered, copy also the file attached
-	if($data->status === 'delivered')
-		$this->clone_files($data, $newitemid);
+    
+    // If old instance is already delivered, copy also the file attached
+    if($data->status === 'delivered')
+        $this->clone_files($data, $newitemid);
 
     }
  
@@ -77,38 +77,43 @@ class restore_digitalization_activity_structure_step extends restore_activity_st
 
     protected function clone_files($data, $newitemid) {
         // Copy file for the new instance to use, see lib.php for more information
-	global $DB, $CFG, $USER;
+    global $DB, $CFG, $USER;
 
-	$fs = get_file_storage();
-	$filearea = $CFG->digitalization_filearea;
-	$filearea_slashed = ($filearea) ? $filearea . '/' : '';
-	$module = $DB->get_record('modules', array('name' => 'digitalization'))->id;
+    $fs = get_file_storage();
+    $filearea = $CFG->digitalization_filearea;
+    $filearea_slashed = ($filearea) ? $filearea . '/' : '';
+    $module = $DB->get_record('modules', array('name' => 'digitalization'))->id;
+
+    $cm = $DB->get_record('course_modules', array('module' => $module,
+                          'instance' => $data->id));
+
+    if (!$cm) {
+        debugging("Module not found");
+        return;
+    }
  
-        // First step: We must fetch information about the old file
-	$cm = $DB->get_record('course_modules', array('module' => $module, 
-						      'course' => $data->course,
-						      'instance' => $data->id));
+    $context = context_module::instance($cm->id);
 
-	// CONTEXT_MODULE is set statically to 70 for every module
-	$context = get_context_instance(CONTEXT_MODULE, $cm->id); 
+    $files = $fs->get_area_files($context->id, 'mod_digitalization', $filearea, $data->id, 'sortorder DESC, id ASC', false);
+    $stored_file = reset($files);
 
-	$files = $fs->get_area_files($context->id, 'mod_digitalization', $filearea, $data->id, 'sortorder DESC, id ASC', false);
-	$stored_file = reset($files);
+    $cm = $DB->get_record('course_modules', array('module' => $module,
+                      'course' => $data->course,
+                      'instance' => $newitemid));
 
-	// Second step: Gather information about the new file
-	$cm = $DB->get_record('course_modules', array('module' => $module, 
-						      'course' => $data->course,
-						      'instance' => $newitemid));
+    if (!$cm) {
+        debugging("New module context not found");
+        return;
+    }
 
-	$context = get_context_instance(CONTEXT_MODULE, $cm->id); 
+    $context = context_module::instance($cm->id);
 
-	$file_record = array('contextid'=>$context->id, 'component'=>'mod_digitalization', 
-			 'filearea'=>$filearea, 'itemid'=>$newitemid, 'filepath'=>'/'.$filearea_slashed, 
-			 'filename'=>$data->name . substr($stored_file->get_filename(), -4),
-			 'timecreated'=>time(), 'timemodified'=>time(), 'userid' => $USER->id);
+    $file_record = array('contextid'=>$context->id, 'component'=>'mod_digitalization', 
+             'filearea'=>$filearea, 'itemid'=>$newitemid, 'filepath'=>'/'.$filearea_slashed, 
+             'filename'=>$data->name . substr($stored_file->get_filename(), -4),
+             'timecreated'=>time(), 'timemodified'=>time(), 'userid' => $USER->id);
 
-	// Now add the file to the course files
-	$fs->create_file_from_storedfile($file_record, $stored_file); 
+    // Now add the file to the course files
+    $fs->create_file_from_storedfile($file_record, $stored_file); 
     }
 }
-
