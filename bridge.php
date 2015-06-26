@@ -1,4 +1,4 @@
- <?php
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -50,7 +50,7 @@ function digitalization_course_list() {
     //get all courses of logged in user
     $courses = enrol_get_my_courses();
 
-    //check for each course if user can it edit. If so, take the current course into 
+    //check for each course if user can it edit. If so, take the current course into
     //the list of courses to which the user can add the new digitalization
     foreach($courses as $c)
     {
@@ -69,13 +69,13 @@ function digitalization_course_list() {
 
 /*
  * User has to login because we need to check to which courses he/she
- * can add some digitalization data (a user should add digitalizations 
+ * can add some digitalization data (a user should add digitalizations
  * only to his own courses!)
  */
 require_login();
 
-/* 
- * After login process (or if a user is already logged in) we go on here... 
+/*
+ * After login process (or if a user is already logged in) we go on here...
  */
 
 
@@ -105,14 +105,14 @@ if(isset($_SESSION['dig_course_id']) && is_numeric($_SESSION['dig_course_id'])) 
     if (has_capability('moodle/course:update', $context)) {
 
         //Save parameter information to the current session
-        //(Developer Note: don't use PARAM_ALPHAEXT for any filed because it will remove 
+        //(Developer Note: don't use PARAM_ALPHAEXT for any filed because it will remove
         // spaces and umlauts)
         $_SESSION['dig_sign']    = optional_param('sign',    '', PARAM_NOTAGS);
         $_SESSION['dig_title']   = optional_param('title',   '', PARAM_NOTAGS);
         $_SESSION['dig_volume']  = optional_param('volume',  '', PARAM_SEQUENCE);
         $_SESSION['dig_issue']   = optional_param('issue',   '', PARAM_SEQUENCE);
         $_SESSION['dig_date']    = optional_param('date',    '', PARAM_NOTAGS);
-        $_SESSION['dig_aufirst'] = optional_param('aufirst', '', PARAM_NOTAGS);		
+        $_SESSION['dig_aufirst'] = optional_param('aufirst', '', PARAM_NOTAGS);
         $_SESSION['dig_aulast']  = optional_param('aulast',  '', PARAM_NOTAGS);
         $_SESSION['dig_atitle']  = optional_param('atitle',  '', PARAM_NOTAGS);
         $_SESSION['dig_issn']    = optional_param('issn',    '', PARAM_NOTAGS);
@@ -127,7 +127,7 @@ if(isset($_SESSION['dig_course_id']) && is_numeric($_SESSION['dig_course_id'])) 
 	 * Another solution for the string replacement problem. TODO build in security checks
 	 */
 	$parNames = array('dig_sign', 'dig_title', 'dig_aufirst', 'dig_aulast', 'dig_atitle');
-	
+
 	foreach($parNames as $param) {
 		$_SESSION[$param] = urldecode($_SESSION[$param]);//html_entity_decode(x, ENT_COMPAT, 'ISO8859-1')
 	}
@@ -147,7 +147,7 @@ if(isset($_SESSION['dig_course_id']) && is_numeric($_SESSION['dig_course_id'])) 
         die();
 
     }
-} 
+}
 
 
 
@@ -164,7 +164,7 @@ $course_list = digitalization_course_list();
 
 //Crazy Moodle...
 $url = new moodle_url('/test/bridge.php');
-$PAGE->set_url($url);    
+$PAGE->set_url($url);
 
 //CONTEXT_SYSTEM just works.
 //Crazy Moodle...
@@ -197,11 +197,11 @@ if (empty($course_list)) {
     /*Following Code should work (documentend classes) but does not (classes not found (not implemented?)) */
     //$form = new html_form();
     //$contents = html_select::make(...)
-    //echo $OUTPUT->form($form, $contents);    
+    //echo $OUTPUT->form($form, $contents);
 
     /*Solution: 'hard code' HTML Tags here...*/
-    
-    //Open form 
+
+    //Open form
     echo html_writer::start_tag('form', array('method' => 'get', 'action' => 'bridge.php'));
 
     //Information Text
@@ -219,37 +219,37 @@ if (empty($course_list)) {
     echo html_writer::empty_tag('input', array('type' => 'submit', 'value' => get_string('bridge_submit', 'digitalization')));
 
     //Hidden fields for all params we already get form InfoGuide
-    $sign = optional_param('sign', '', PARAM_NOTAGS); 
+    $sign = optional_param('sign', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sign', 'value' => $sign));
 
-    $title = optional_param('title', '', PARAM_NOTAGS); 
+    $title = optional_param('title', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'title', 'value' => $title));
 
-    $volume = optional_param('volume', '', PARAM_SEQUENCE); 
+    $volume = optional_param('volume', '', PARAM_SEQUENCE);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'volume', 'value' => $volume));
 
-    $issue = optional_param('issue', '', PARAM_SEQUENCE); 
+    $issue = optional_param('issue', '', PARAM_SEQUENCE);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'issue', 'value' => $issue));
 
-    $date = optional_param('date', '', PARAM_NOTAGS); 
+    $date = optional_param('date', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'date', 'value' => $date));
 
-    $volume = optional_param('sign', '', PARAM_NOTAGS); 
+    $volume = optional_param('sign', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'volume', 'value' => $volume));
 
-    $aufirst = optional_param('aufirst', '', PARAM_NOTAGS); 
+    $aufirst = optional_param('aufirst', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'aufirst', 'value' => $aufirst));
 
-    $aulast = optional_param('aulast', '', PARAM_NOTAGS); 
+    $aulast = optional_param('aulast', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'aulast', 'value' => $aulast));
 
-    $atitle = optional_param('atitle', '', PARAM_NOTAGS); 
+    $atitle = optional_param('atitle', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'atitle', 'value' => $atitle));
 
-    $issn = optional_param('issn', '', PARAM_NOTAGS); 
+    $issn = optional_param('issn', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'issn', 'value' => $issn));
 
-    $isbn = optional_param('isbn', '', PARAM_NOTAGS); 
+    $isbn = optional_param('isbn', '', PARAM_NOTAGS);
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'isbn', 'value' => $isbn));
 
 
