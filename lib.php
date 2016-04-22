@@ -41,26 +41,26 @@ defined('MOODLE_INTERNAL') || die();
  * @return int The id of the newly inserted newmodule record
  */
 function digitalization_add_instance($digitalization) {
-    
+
     global $DB, $USER, $CFG;
 
     //This Method is called at two different times in the ordering process:
     // 1. When the "Import Metadata from OPAC"-Button is clicked
     // 2. When one of the "Save"-Buttons is clicked
 
-    if (isset($digitalization->import_from_opac) && $digitalization->import_from_opac != '') 
+    if (isset($digitalization->import_from_opac) && $digitalization->import_from_opac != '')
     {
-        //Case 1: save user input (digitalization name) and course number in the session. 
+        //Case 1: save user input (digitalization name) and course number in the session.
         //Then send a redirect to the OPAC URL
 
 	/*
          What is stored for the digitalization in the current session?
          - Name of the digitalization activity
          - ID of the course to which the digitalization should be added
-         - Section in the course in which the digitalization should be added. 
+         - Section in the course in which the digitalization should be added.
            (A course consists of a number of sections, e.g. one section per course week)
          */
-        
+
         //Save user input in session
         $_SESSION['dig_name']             = $digitalization->name;    //Course Name
         $_SESSION['dig_course_id']        = $digitalization->course;  //Course ID
@@ -77,20 +77,20 @@ function digitalization_add_instance($digitalization) {
         $_SESSION['dig_modulename']       = $digitalization->modulename;
         $_SESSION['dig_instance']         = $digitalization->instance;
         $_SESSION['dig_groupingid']       = $digitalization->groupingid;
-        $_SESSION['dig_groupmembersonly'] = $digitalization->groupmembersonly; 
-        $_SESSION['dig_completion']       = $digitalization->completion;        
-        $_SESSION['dig_completionview']   = $digitalization->completionview;        
-        $_SESSION['dig_completiongradeitemnumber'] = $digitalization->completiongradeitemnumber;        
-        $_SESSION['dig_intro']            = $digitalization->intro;  
-        $_SESSION['dig_introformat']      = $digitalization->introformat;        
-        $_SESSION['dig_timecreated']      = $digitalization->timecreated;        
-        */   
+        $_SESSION['dig_groupmembersonly'] = $digitalization->groupmembersonly;
+        $_SESSION['dig_completion']       = $digitalization->completion;
+        $_SESSION['dig_completionview']   = $digitalization->completionview;
+        $_SESSION['dig_completiongradeitemnumber'] = $digitalization->completiongradeitemnumber;
+        $_SESSION['dig_intro']            = $digitalization->intro;
+        $_SESSION['dig_introformat']      = $digitalization->introformat;
+        $_SESSION['dig_timecreated']      = $digitalization->timecreated;
+        */
 
 
 
         //Redirect to the OPAC
         redirect($CFG->digitalization_opac_url);
-    
+
 
     //Case 2: create a new database entry with the new digitalisation activity
     // We proceed only, if the minimum data is present which is needed for processing the order
@@ -106,7 +106,7 @@ function digitalization_add_instance($digitalization) {
         $digitalization->useremail = $USER->email;
         $digitalization->userphone = $USER->phone1;
 	$digitalization->user = $USER->id;
-      
+
         if (!isset($digitalization->issn)) {
             $digitalization->issn = '';
         }
@@ -123,11 +123,11 @@ function digitalization_add_instance($digitalization) {
             $digitalization->issue = '';
         }
 
-        
+
         //Insert the digitalization order to the database
         //Notice: insert_record returns the ID of the new record (if 3rd parameter is not set or set to TRUE)
         $id = $DB->insert_record('digitalization', $digitalization);
-      
+
         //Set the ID of the database recordset to the object, because it's needed for
         //for sending the order email in the next step
         $digitalization->id = $id;
@@ -139,9 +139,9 @@ function digitalization_add_instance($digitalization) {
         digitalization_helper_clear_session();
 
         return $id;
-    
+
     } else {
-     
+
         // If we come to this point, there is data missing, so we print an error message and abort
         print_error(get_string('form_error', 'digitalization'));
     }
@@ -245,23 +245,23 @@ function digitalization_print_recent_activity($course, $viewfullnames, $timestar
 
 /**
  * Looks for digitalizations in the ftp dir provided in the
- * module settings. It then compares the found files with 
- * open digitalization requests and matches them. 
+ * module settings. It then compares the found files with
+ * open digitalization requests and matches them.
  * The files are stored in the Moodle file structure,
  * users can access them via the pluginfile.php (normal procedure)
  *
  * @return boolean
  **/
-function digitalization_cron() { 
+function digitalization_cron() {
 	global $DB, $CFG;
-	
+
 	require_once("filetransfer/stub.php");
 	require_once("filetransfer/ftp.php");
 	require_once("filetransfer/ftps.php");
 	require_once('filetransfer/sftp.php');
 	require_once('filetransfer/sftp-lib.php');
 
-	$delete_file = $CFG->digitalization_delete_files; 
+	$delete_file = $CFG->digitalization_delete_files;
 	$filearea = $CFG->digitalization_filearea;
 	$ftp_server = $CFG->digitalization_ftp_host;
 	$ftp_dir = $CFG->digitalization_ftp_dir;
@@ -283,7 +283,7 @@ function digitalization_cron() {
 	}else {
 	    $ftp_handler = new FTPHandler($ftp_server, $ftp_user, $ftp_pass);
 	}
-	
+
 	// Establish connection
 	if (!$ftp_handler->connect()) {
 	    echo "\nMod_digitalization: Cannot establish FTP connection.\n";
@@ -298,9 +298,9 @@ function digitalization_cron() {
 
 	// List the files in the directory
 	$contents = $ftp_handler->listDir($ftp_dir);
-	
+
 	// List of requested digitalizations still open
-	$open_requests = $DB->get_records('digitalization', array('status' => 'ordered')); 
+	$open_requests = $DB->get_records('digitalization', array('status' => 'ordered'));
 
 	// Build list of comparable names from the open requests, format of each element (id, name)
 	$request_names = array();
@@ -318,7 +318,7 @@ function digitalization_cron() {
 
 	foreach($contents as $filename) {
 		// very simple strategy to look for the string in the file name, just adds a 3-char long postfix and cmps the endings
-		$intermediary = strtoupper(substr($filename, -17, 13)); 
+		$intermediary = strtoupper(substr($filename, -17, 13));
 
 		// Compare file name with list of open digitalization requests
 		if(($result_key = array_search($intermediary, $request_names)) === FALSE)
@@ -335,7 +335,7 @@ function digitalization_cron() {
 
 	// Now that we found at least one new document, start to download and move them into the Moodle file system
 	foreach($combinations_found as $id => $filename) {
-		// Needed vars:		
+		// Needed vars:
 		$filearea_slashed = ($filearea) ? $filearea . '/' : '';
 		$rel_path_to_tmp_data = $CFG->dataroot.'/temp/'.$filearea_slashed.substr($filename, -17);
 
@@ -356,16 +356,16 @@ function digitalization_cron() {
 
 				// Workaround because course module id isn't known in this context
 				$module = $DB->get_record('modules', array('name' => 'digitalization'))->id;
-				$cm = $DB->get_record('course_modules', array('module' => $module, 
+				$cm = $DB->get_record('course_modules', array('module' => $module,
 									      'course' => $request_objects[$id]->course,
 									      'instance' => $id));
 
 				// CONTEXT_MODULE is set statically to 70 for every module
-	 			$context = get_context_instance(CONTEXT_MODULE, $cm->id); 
-			
+	 			$context = get_context_instance(CONTEXT_MODULE, $cm->id);
+
 				// First step: Create new file in regular data structure
-				$file_record = array('contextid'=>$context->id, 'component'=>'mod_digitalization', 
-						 'filearea'=>$filearea, 'itemid'=>$id, 'filepath'=>'/'.$filearea_slashed, 
+				$file_record = array('contextid'=>$context->id, 'component'=>'mod_digitalization',
+						 'filearea'=>$filearea, 'itemid'=>$id, 'filepath'=>'/'.$filearea_slashed,
 						 'filename'=>$request_objects[$id]->name . substr($filename, -4),
 						 'timecreated'=>time(), 'timemodified'=>time(), 'userid' => $request_objects[$id]->user);
 
@@ -378,10 +378,10 @@ function digitalization_cron() {
 				// The following setting leads to an error, if a file with the same name exists - we catch the exception and continue...
 				$file_record['itemid'] = 0;
 				$file_record['filepath'] = '/';
-				
+
 				try {
 				    	// Now add the file to the course files
-				    	$fs->create_file_from_storedfile($file_record, $stored_file); 
+				    	$fs->create_file_from_storedfile($file_record, $stored_file);
 				} catch (stored_file_creation_exception $e) {
 				    	echo "\nCourse file could not be registered - will continue anyway. \n";
 				}
@@ -398,7 +398,7 @@ function digitalization_cron() {
 
                                 // Send an email about the delivered media to the user who has ordered it
                                 if ($send_delivery_email) {
-                                    // Search for the email address of the user who has ordered current digitalization 
+                                    // Search for the email address of the user who has ordered current digitalization
                                     $digitalization = $DB->get_record('digitalization', array('id' => $id));
                                     $user = $DB->get_record('user', array('id' => $digitalization->user));
 
@@ -409,17 +409,17 @@ function digitalization_cron() {
                                 }
 
 				// Update all clones of the instance, so that they contain the same status (they link to their parent, see view.php)
-				$clones = $DB->get_records('digitalization', array('copy_of' => $id)); 
-				
+				$clones = $DB->get_records('digitalization', array('copy_of' => $id));
+
 				// Since moodle does not know update_records, we need to do it separately for each clone...
 				foreach($clones AS $clone) {
 
-					$cm = $DB->get_record('course_modules', array('module' => $module, 
+					$cm = $DB->get_record('course_modules', array('module' => $module,
 									      'course' => $clone->course,
 									      'instance' => $clone->id));
 
 					// CONTEXT_MODULE is set statically to 70 for every module
-	 				$context = get_context_instance(CONTEXT_MODULE, $cm->id); 
+	 				$context = get_context_instance(CONTEXT_MODULE, $cm->id);
 
 					$file_record['contextid'] = $context->id;
 					$file_record['component'] = 'mod_digitalization';
@@ -427,10 +427,10 @@ function digitalization_cron() {
 					$file_record['itemid'] = $clone->id;
 					$file_record['filepath'] = '/' . $filearea_slashed;
 					$file_record['filename'] = $clone->name . substr($filename, -4);
-					
+
 					// Now add the file to the course files
-					$fs->create_file_from_storedfile($file_record, $stored_file); 
-					
+					$fs->create_file_from_storedfile($file_record, $stored_file);
+
 					// we already have $data->status = delivered and only want to update this field!
 					$data->id = $clone->id;
 					$DB->update_record('digitalization', $data);
@@ -440,9 +440,9 @@ function digitalization_cron() {
 			} // else: $ret != FTP_FINISHED
 		} // else: $fp = fopen
 	} // foreach: $combination_found
-	
+
 	// Close connection
-	$ftp_handler->close();  
+	$ftp_handler->close();
 
 	return true;
 }
@@ -526,7 +526,7 @@ function digitalization_uninstall() {
 
 /**
  * Coming from pluginfile.php we must process the download of the file... aaaargh, what a dumb design! :)
- * 
+ *
  * @param  course
  * @param  cm
  * @param  context
@@ -537,17 +537,17 @@ function digitalization_uninstall() {
  */
 function digitalization_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
 	global $CFG;
-	$filearea = $CFG->digitalization_filearea;	
+	$filearea = $CFG->digitalization_filearea;
 
-	$fs = get_file_storage();	
-	
+	$fs = get_file_storage();
+
 	// We only need to know whether the user is allowed to see this resource or not!
 	require_course_login($course, true, $cm);
-        
+
 	// taken from moodle/pluginfile.php
         $filename = array_pop($args);
         $filepath = $args ? '/'.implode('/', $args).'/' : '/';
-        if (!$file = $fs->get_file($context->id, 'mod_'.$cm->modname, 'content', 
+        if (!$file = $fs->get_file($context->id, 'mod_'.$cm->modname, 'content',
 		$cm->instance, $filepath, $filename) or $file->is_directory()) {
             send_file_not_found();
         }
@@ -560,14 +560,14 @@ function digitalization_pluginfile($course, $cm, $context, $filearea, $args, $fo
 }
 
 /**
- * Creates and sends the order email in subito format for a new 
+ * Creates and sends the order email in subito format for a new
  * digitalization to the MyBib eDoc System.
  *
  * @param  object digitalization
  * @return void
  */
 function digitalization_helper_send_order($digitalization) {
-    global $CFG;    
+    global $CFG;
 
 
     // Set configurations for the order email
@@ -610,7 +610,7 @@ function digitalization_helper_send_order($digitalization) {
     );
 
 
-    
+
     //Step 1: Create email-body
     $email_body = 'message-type: REQUEST
 transaction-id: '. $DIGITALIZATION_OPTIONS['subito']['transaction-id'] .'
@@ -620,7 +620,7 @@ transaction-type: '. $DIGITALIZATION_OPTIONS['subito']['transaction-type'] .'
 transaction-qualifier: '. $DIGITALIZATION_OPTIONS['subito']['transaction-qualifier'] .'
 service-date-time: '. date('YmdHis') .'
 requester-id: '. $DIGITALIZATION_OPTIONS['subito']['requester-id'] .'
-country-delivery-target: '. $DIGITALIZATION_OPTIONS['subito']['country-delivery-target'] .' 
+country-delivery-target: '. $DIGITALIZATION_OPTIONS['subito']['country-delivery-target'] .'
 client-id: '. $DIGITALIZATION_OPTIONS['subito']['client-id'] .'
 client-identifier: '. $DIGITALIZATION_OPTIONS['subito']['client-identifier'] .'
 delivery-address: '. $DIGITALIZATION_OPTIONS['subito']['delivery-address'] .'
@@ -633,7 +633,7 @@ del-status-level-user: '. $DIGITALIZATION_OPTIONS['subito']['del-status-level-us
 del-status-level-requester: '. $DIGITALIZATION_OPTIONS['subito']['del-status-level-requester'] .'
 delivery-service: '. $DIGITALIZATION_OPTIONS['subito']['delivery-service'] .'
 delivery-service-format: '. $DIGITALIZATION_OPTIONS['subito']['delivery-service-format'] .'
-delivery-service-alternative: '. $DIGITALIZATION_OPTIONS['subito']['delivery-service-alternative'] .' 
+delivery-service-alternative: '. $DIGITALIZATION_OPTIONS['subito']['delivery-service-alternative'] .'
 contact-person-name: '. $digitalization->username .'
 contact-person-phone:
 contact-person-email: '. $digitalization->useremail .'
@@ -660,10 +660,10 @@ item-issn: '. $digitalization->issn .'
 item-isbn: '. $digitalization->isbn .'
 order-comment: '. $digitalization->dig_comment .'
 ';
-    
 
 
-  
+
+
     //Step 2: Send email
 
     $headers  = "From: ". $DIGITALIZATION_OPTIONS['orderemail']['sender'] ."\r\n";
@@ -671,8 +671,8 @@ order-comment: '. $digitalization->dig_comment .'
     $headers .= "Content-type: text/plain; charset=utf-8\r\n";
 
     @mail($DIGITALIZATION_OPTIONS['orderemail']['receiver'], $DIGITALIZATION_OPTIONS['orderemail']['subject'], $email_body, $headers);
-  
-    
+
+
 }
 
 
@@ -681,7 +681,7 @@ order-comment: '. $digitalization->dig_comment .'
 /**
  * Creates a formated identifier for the subito order email.
  * The Identifier has the following format: MTP-iiiiiiiii
- * 'MTP' is a configured prefix and 'iiiiiiiii' is a number 
+ * 'MTP' is a configured prefix and 'iiiiiiiii' is a number
  * of 9 integers, which is the param $id integer with 0s prefixed.
  *
  * @param  integer $id
@@ -722,7 +722,7 @@ function digitalization_helper_clear_session() {
     $_SESSION['dig_volume']    = '';
     $_SESSION['dig_issue']     = '';
     $_SESSION['dig_date']      = '';
-    $_SESSION['dig_aufirst']   = '';	
+    $_SESSION['dig_aufirst']   = '';
     $_SESSION['dig_aulast']    = '';
     $_SESSION['dig_atitle']    = '';
     $_SESSION['dig_issn']      = '';
@@ -767,8 +767,8 @@ function digitalization_helper_send_delivery($receiver_email, $digitalization=nu
 
     $email_subject = get_string('delivery_email_subject', 'digitalization');
     $email_body    = get_string('delivery_email_body', 'digitalization') . $order_details . $moodle_url;
-    
-    
+
+
     mail($receiver_email, $email_subject, $email_body, $headers);
 }
 
