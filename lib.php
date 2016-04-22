@@ -658,7 +658,7 @@ item-title-of-article: '. $digitalization->atitle .'
 item-pagination: '. $digitalization->pages .'
 item-issn: '. $digitalization->issn .'
 item-isbn: '. $digitalization->isbn .'
-order-comment: '. $digitalization->dig_comment .'
+requester-note: '. $digitalization->dig_comment .'
 ';
 
 
