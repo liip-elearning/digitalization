@@ -73,6 +73,19 @@ function xmldb_digitalization_upgrade($oldversion) {
     	// nothing to do
     }
 
+    if ($oldversion < 2017072700) {
+        $table = new xmldb_table('digitalization');
+        $publisher = new xmldb_field('publisher', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'pages');
+        $pagecount = new xmldb_field('pagecount', XMLDB_TYPE_CHAR, '16', null, null, null, null, 'publisher');
+        if (!$dbman->field_exists($table, $publisher)) {
+            $dbman->add_field($table, $publisher);
+        }
+        if (!$dbman->field_exists($table, $pagecount)) {
+            $dbman->add_field($table, $pagecount);
+        }
+        upgrade_mod_savepoint(true, 2017072702, 'digitalization');
+    }
+
 /// And that's all. Please, examine and understand the 3 example blocks above. Also
 /// it's interesting to look how other modules are using this script. Remember that
 /// the basic idea is to have "blocks" of code (each one being executed only once,

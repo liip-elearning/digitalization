@@ -31,13 +31,6 @@ require_once(dirname(__FILE__).'/lib.php');
 
 $id = required_param('id', PARAM_INT);   // course
 
-//TODO:DELETE ME!
-if (isset($_GET['debug']))
-{
-	print_r($_SESSION);
-}
-//END:DELETE ME!
-
 if (! $course = $DB->get_record('course', array('id' => $id))) {
     error('Course ID is incorrect');
 }

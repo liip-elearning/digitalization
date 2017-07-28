@@ -40,7 +40,7 @@ require_once($CFG->dirroot.'/course/moodleform_mod.php');
 class mod_digitalization_mod_form extends moodleform_mod {
 
     private $media_data = null;
-    
+
 
     function definition() {
 
@@ -48,13 +48,15 @@ class mod_digitalization_mod_form extends moodleform_mod {
         $mform =& $this->_form;
 
 
-        //If user is coming back from selecting a media in InfoGuide, 
+        //If user is coming back from selecting a media in InfoGuide,
         //store the media information in an seperate object ($media_data)
-	$this->set_media_data();
+        $this->set_media_data();
+        // print_r($_SESSION);
 
         //Adding the "general" fieldset, where all the common settings are displayed
         $mform->addElement('header', 'general', get_string('general', 'form'));
-        
+
+
         //Adding the standard "name" field
         $name_attributes = array('size' => '45');
         if (isset($_SESSION['dig_name']) && $_SESSION['dig_name'] != '') {
@@ -65,25 +67,25 @@ class mod_digitalization_mod_form extends moodleform_mod {
 
         $mform->addElement('text', 'name', get_string('name', 'digitalization'), $name_attributes);
 
-        
+
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
             $mform->setType('name', PARAM_CLEAN);
         }
-        
+
         $mform->addRule('name', null, 'required', null, 'client');
         $mform->addRule('name', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
         $mform->addHelpButton('name', 'name', 'digitalization');
-      
+
 	// If this form is used to modify an existing digitalization, we do not want the user to update the order details
 	if(!isset($_GET['update']) || empty($_GET['update'])) {
-        
+
 		//Frame for fields
 		$mform->addElement('header', 'book_specifiers', get_string('book_specifiers', 'digitalization'));
-	
 
-		
+
+
 		if ($this->media_data == null) {
 
 		    /*
@@ -91,11 +93,11 @@ class mod_digitalization_mod_form extends moodleform_mod {
 		     */
 
 
-		    //As the SUBMIT-element does not support adding a help button, we pack the button into a element group 
+		    //As the SUBMIT-element does not support adding a help button, we pack the button into a element group
 		    //and add the help button to the group.
-		    $elementsArray=array();		
+		    $elementsArray=array();
 		    $elementsArray[] =& $mform->createElement('submit', 'import_from_opac', get_string('import_from_opac', 'digitalization'));
-		
+
 		    /* Params of addGroup:
 		     1: Element-Array
 		     2: Name
@@ -103,16 +105,16 @@ class mod_digitalization_mod_form extends moodleform_mod {
 		     4: ?
 		     5: Switch on/off the enumeration of elements (will change name of elements in the group)
 		    */
-		    $mform->addGroup($elementsArray, 'import_from_opac_group', '', array(' '), false); 
+		    $mform->addGroup($elementsArray, 'import_from_opac_group', '', array(' '), false);
 		    $mform->addHelpButton('import_from_opac_group', 'import_from_opac', 'digitalization');
 
 		} else {
 
 
 		    /*
-    		     * If user was relocated to the form after selecting a book/journal in 
+    		     * If user was relocated to the form after selecting a book/journal in
 		     * InfoGuide, show the meta data of the ordered media (as static text).
-  		     * If a needed field (e.g. 'sign') is not already set, a textbox is 
+  		     * If a needed field (e.g. 'sign') is not already set, a textbox is
 		     * displayed, which the user has to fill.
 		     */
 
@@ -157,10 +159,10 @@ class mod_digitalization_mod_form extends moodleform_mod {
 		    /*
 		     * If the selected media has a ISSN, it's a journal for which additional information is needed:
 		     *  - volume number
-		     *  - issue number 
+		     *  - issue number
 		     */
 		    if ($this->media_data->type == 'issn') {
-		        
+
 			//Volume
 		        if ($this->media_data->volume != '') {
 		            $mform->addElement('static', 'static_volume', get_string('volume', 'digitalization'), $this->media_data->volume);
@@ -193,15 +195,15 @@ class mod_digitalization_mod_form extends moodleform_mod {
 		    //Pages
 		    $pages_attributes = array('size'  => '45');
 		    $mform->addElement('text', 'pages', get_string('pages', 'digitalization'), $pages_attributes);
-		
+
 		    $mform->addRule('pages', null, 'required', null, 'client');
 		    $mform->addRule('pages', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 		    $mform->addHelpButton('pages', 'pages', 'digitalization');
-	      
+
 
 		    //ISSN/ISBN
 		    if ($this->media_data->type == 'issn') {
-		        
+
 			//Journal has a ISSN
 			$mform->addElement('static', 'static_issn', 'ISSN', $this->media_data->issn);
 		        $mform->addElement('hidden', 'issn', $this->media_data->issn);
@@ -212,6 +214,18 @@ class mod_digitalization_mod_form extends moodleform_mod {
 		        $mform->addElement('static', 'static_isbn', 'ISBN', $this->media_data->isbn);
 		        $mform->addElement('hidden', 'isbn', $this->media_data->isbn);
 		    }
+
+            // Publisher
+            if ($this->media_data->publisher != '') {
+                $mform->addElement('static', 'static_publisher', get_string('publisher', 'digitalization'), $this->media_data->publisher);
+                $mform->addElement('hidden', 'publisher', $this->media_data->publisher);
+            }
+
+            // Page count
+            if ($this->media_data->pagecount != '') {
+                $mform->addElement('static', 'static_pagecount', get_string('pagecount', 'digitalization'), $this->media_data->pagecount);
+                $mform->addElement('hidden', 'pagecount', $this->media_data->pagecount);
+            }
 
 
 		    //Signature
@@ -227,7 +241,7 @@ class mod_digitalization_mod_form extends moodleform_mod {
 		    //Comment
 		    $comment_attributes = array('size'  => '45');
 		    $mform->addElement('text', 'dig_comment', get_string('comment', 'digitalization'), $comment_attributes);
-		
+
 		    $mform->addRule('dig_comment', get_string('maximumchars', '', 255), 'maxlength', 255, 'client');
 		    $mform->addHelpButton('dig_comment', 'comment', 'digitalization');
 
@@ -240,8 +254,8 @@ class mod_digitalization_mod_form extends moodleform_mod {
 
         //Add standard elements, common to all modules
         $this->standard_coursemodule_elements();
-        
-        /* 
+
+        /*
         $features = new stdClass;
         $features->groups = false;
         $features->groupings = true;
@@ -261,32 +275,32 @@ $this->add_action_buttons();
 
     private function set_media_data() {
 
-        //If user is coming back from selecting a media in InfoGuide, create an 
+        //If user is coming back from selecting a media in InfoGuide, create an
         //object holding all the information of the selected media
-        if (isset($_SESSION['dig_issn']) && $_SESSION['dig_issn'] != '' || 
+        if (isset($_SESSION['dig_issn']) && $_SESSION['dig_issn'] != '' ||
             isset($_SESSION['dig_isbn']) && $_SESSION['dig_isbn'] != '') {
 
             $this->media_data = new stdClass();
 
             //ISSN or ISBN
             if (isset($_SESSION['dig_issn']) && $_SESSION['dig_issn'] != '') {
-                
-                //ordered media is a journal 
+
+                //ordered media is a journal
                 $this->media_data->type = 'issn';
-                $this->media_data->issn = $_SESSION['dig_issn'];     
+                $this->media_data->issn = $_SESSION['dig_issn'];
 
                 //Volume
                 if (isset($_SESSION['dig_volume']) && $_SESSION['dig_volume'] != '') {
-                    $this->media_data->volume = $_SESSION['dig_volume']; 
+                    $this->media_data->volume = $_SESSION['dig_volume'];
                 } else {
-                    $this->media_data->volume = ''; 
+                    $this->media_data->volume = '';
                 }
 
                 //Issue
                 if (isset($_SESSION['dig_issue']) && $_SESSION['dig_issue'] != '') {
-                    $this->media_data->issue = $_SESSION['dig_issue']; 
+                    $this->media_data->issue = $_SESSION['dig_issue'];
                 } else {
-                    $this->media_data->issue = ''; 
+                    $this->media_data->issue = '';
                 }
 
             } else {
@@ -298,44 +312,58 @@ $this->add_action_buttons();
 
             //Signature
             if (isset($_SESSION['dig_sign']) && $_SESSION['dig_sign'] != '') {
-                $this->media_data->sign = $_SESSION['dig_sign']; 
+                $this->media_data->sign = $_SESSION['dig_sign'];
             } else {
-                $this->media_data->sign = ''; 
+                $this->media_data->sign = '';
             }
 
             //Title of book/journal
             if (isset($_SESSION['dig_title']) && $_SESSION['dig_title'] != '') {
-                $this->media_data->title = $_SESSION['dig_title']; 
+                $this->media_data->title = $_SESSION['dig_title'];
             } else {
-                $this->media_data->title = ''; 
+                $this->media_data->title = '';
             }
 
             //Title of chapter/article
             if (isset($_SESSION['dig_atitle']) && $_SESSION['dig_atitle'] != '') {
-                $this->media_data->atitle = $_SESSION['dig_atitle']; 
+                $this->media_data->atitle = $_SESSION['dig_atitle'];
             } else {
-                $this->media_data->atitle = ''; 
+                $this->media_data->atitle = '';
             }
 
             //Author - firstname
             if (isset($_SESSION['dig_aufirst']) && $_SESSION['dig_aufirst'] != '') {
-                $this->media_data->aufirst = $_SESSION['dig_aufirst']; 
+                $this->media_data->aufirst = $_SESSION['dig_aufirst'];
             } else {
-                $this->media_data->aufirst = ''; 
+                $this->media_data->aufirst = '';
             }
 
             //Author - lastname
             if (isset($_SESSION['dig_aulast']) && $_SESSION['dig_aulast'] != '') {
-                $this->media_data->aulast = $_SESSION['dig_aulast']; 
+                $this->media_data->aulast = $_SESSION['dig_aulast'];
             } else {
-                $this->media_data->aulast = ''; 
+                $this->media_data->aulast = '';
             }
 
             //Publishing date
             if (isset($_SESSION['dig_date']) && $_SESSION['dig_date'] != '') {
-                $this->media_data->date = $_SESSION['dig_date']; 
+                $this->media_data->date = $_SESSION['dig_date'];
             } else {
                 $this->media_data->date = '';
+            }
+
+            // Publisher
+            if (isset($_SESSION['dig_publisher']) && $_SESSION['dig_publisher'] != '') {
+                $this->media_data->publisher = $_SESSION['dig_publisher'];
+            } else {
+                $this->media_data->publisher = '';
+            }
+
+            // page count
+            if (isset($_SESSION['dig_pagecount']) && $_SESSION['dig_pagecount'] != '') {
+                $this->media_data->pagecount = $_SESSION['dig_pagecount'];
+            } else {
+                $this->media_data->pagecount = '';
             }
        }
 

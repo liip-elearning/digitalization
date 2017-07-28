@@ -123,6 +123,14 @@ function digitalization_add_instance($digitalization) {
             $digitalization->issue = '';
         }
 
+        if (!isset($digitalization->publisher)) {
+            $digitalization->publisher = '';
+        }
+
+        if (!isset($digitalization->pagecount)) {
+            $digitalization->pagecount = '';
+        }
+
 
         //Insert the digitalization order to the database
         //Notice: insert_record returns the ID of the new record (if 3rd parameter is not set or set to TRUE)
@@ -658,6 +666,8 @@ item-title-of-article: '. $digitalization->atitle .'
 item-pagination: '. $digitalization->pages .'
 item-issn: '. $digitalization->issn .'
 item-isbn: '. $digitalization->isbn .'
+item-publisher: '. $digitalization->publisher .'
+supplemental-item-description: '. $digitalization->pagecount .'
 requester-note: '. $digitalization->dig_comment .'
 ';
 
@@ -727,6 +737,8 @@ function digitalization_helper_clear_session() {
     $_SESSION['dig_atitle']    = '';
     $_SESSION['dig_issn']      = '';
     $_SESSION['dig_isbn']      = '';
+    $_SESSION['dig_publisher'] = '';
+    $_SESSION['dig_pagecount'] = '';
 }
 
 

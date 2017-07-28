@@ -58,6 +58,8 @@ $string['date'] = 'Erscheinungsjahr';
 $string['volume'] = 'Band';
 $string['issue'] = 'Heft';
 $string['pages'] = 'Seiten';
+$string['publisher'] = 'Verlag';
+$string['pagecount'] = 'Seitenzahl';
 $string['pages_help'] = 'Bitte beachten Sie, dass gemäß Par.52a UrhG nur kleinere Teile eines Werkes oder einzelne Aufsätze aus Zeitschriften bereitgestellt werden dürfen. <br>
 Weitere Hilfe finden Sie unter <a href="http://www.ub.tum.de/digisem" target="_blank">http://www.ub.tum.de/digisem</a>.';
 $string['comment'] = 'Kommentar';

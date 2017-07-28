@@ -23,7 +23,9 @@
         <FIELD NAME="volume" TYPE="char" LENGTH="45" NOTNULL="false" SEQUENCE="false" PREVIOUS="title" NEXT="issue"/>
         <FIELD NAME="issue" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="volume" NEXT="pub_date"/>
         <FIELD NAME="pub_date" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" PREVIOUS="issue" NEXT="pages"/>
-        <FIELD NAME="pages" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false" PREVIOUS="pub_date" NEXT="dig_comment"/>
+        <FIELD NAME="pages" TYPE="char" LENGTH="32" NOTNULL="false" SEQUENCE="false" PREVIOUS="pub_date" NEXT="publisher"/>
+        <FIELD NAME="publisher" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" PREVIOUS="pages" NEXT="pagecount"/>
+        <FIELD NAME="pagecount" TYPE="char" LENGTH="16" NOTNULL="false" SEQUENCE="false" PREVIOUS="publisher" NEXT="dig_comment"/>
         <FIELD NAME="dig_comment" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" PREVIOUS="pages"/>
       </FIELDS>
       <KEYS>

@@ -117,6 +117,10 @@ if(isset($_SESSION['dig_course_id']) && is_numeric($_SESSION['dig_course_id'])) 
         $_SESSION['dig_atitle']  = optional_param('atitle',  '', PARAM_NOTAGS);
         $_SESSION['dig_issn']    = optional_param('issn',    '', PARAM_NOTAGS);
         $_SESSION['dig_isbn']    = optional_param('isbn',    '', PARAM_NOTAGS);
+        $_SESSION['dig_publisher'] = optional_param('item-publisher', '', PARAM_NOTAGS);
+        $_SESSION['dig_pagecount'] = optional_param('supplemental-item-description', '', PARAM_NOTAGS);
+        $_SESSION['debug'] = $_GET;
+
 
 	//2012-01-17 meyerp: Workaround, %2F to / in signature
 	/*$_SESSION['dig_sign'] = str_replace(array('%2F'), // to be replaced

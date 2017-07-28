@@ -52,7 +52,7 @@ add_to_log($course->id, 'digitalization', 'view', "view.php?id=$cm->id", $digita
 
 /**
  * Case distinction: Either the DB record status is set to "delivered", then we forward the user to the file. This is done for everyone - group???
- * Otherwise we provide information about the order to managers of the course only. 
+ * Otherwise we provide information about the order to managers of the course only.
  */
 
 // Case 1: Record status set to "delivered" - redirect to pluginfile.php
@@ -87,8 +87,8 @@ if($digitalization->status === 'delivered')  {
     // Check user access priviledges for this level
     if(!has_capability('moodle/course:update', $context))
 	print_error(get_string('view_error', 'digitalization'));
-    
-    
+
+
     $PAGE->set_button(update_module_button($cm->id, $course->id, get_string('modulename', 'digitalization')));
 
     // Output starts here
@@ -156,6 +156,14 @@ if($digitalization->status === 'delivered')  {
 <tr>
 <td><p>'. get_string('isbn', 'digitalization') .'</p></td>
 <td><p>'. $digitalization->isbn .'</p></p></td>
+</tr>
+<tr>
+<td><p>'. get_string('publisher', 'digitalization') .'</p></td>
+<td><p>'. $digitalization->publisher .'</p></p></td>
+</tr>
+<tr>
+<td><p>'. get_string('pagecount', 'digitalization') .'</p></td>
+<td><p>'. $digitalization->pagecount .'</p></p></td>
 </tr>
 <tr>
 <td><p>'. get_string('sign', 'digitalization') .'</p></td>
