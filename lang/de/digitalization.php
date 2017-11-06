@@ -38,6 +38,9 @@ $string['Digitalization'] = 'Digitalisierung';
 $string['pluginadministration'] = 'Administration dig. Sem.Apparat';
 $string['pluginname'] = 'Digitaler Semesterapparat';
 
+// LIIP-Customization
+$string['digitalization:addinstance'] = 'Add a new digitalization';
+
 //New digitalization activity
 $string['name'] = 'Name';
 $string['name_help'] = 'Geben Sie einen Namen für Ihre Bestellung ein. Für Studenten wird dieser Name als Dateiname des PDFs angezeigt. ';

@@ -37,6 +37,9 @@ $string['Digitalization'] = 'Digitalization';
 $string['pluginadministration'] = 'Digitalization administration';
 $string['pluginname'] = 'Digitalization';
 
+// LIIP-Customization
+$string['digitalization:addinstance'] = 'Add a new digitalization';
+
 //New digitalization activity
 $string['name'] = 'Name';
 $string['name_help'] = 'Type in the name for your order. Students will see this name as the filename for the resulting PDF document.';

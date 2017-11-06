@@ -49,7 +49,21 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-	
+
+    // LIIP-CUSTOMIZATION: Ability to add a new digitalization to the course.
+    // Copied over from mod_quiz for Moodle 2.3+ compatibility
+    'mod/digitalization:addinstance' => array(
+        'riskbitmask' => RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+        'clonepermissionsfrom' => 'moodle/course:manageactivities'
+    ),
+
     /*// View the downloadable file
     'mod/digitalization:view' => array(
         'captype' => 'read',
